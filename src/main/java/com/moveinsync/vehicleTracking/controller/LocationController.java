@@ -1,35 +1,22 @@
 package com.moveinsync.vehicleTracking.controller;
+
 import com.moveinsync.vehicleTracking.model.Location;
-import com.moveinsync.vehicleTracking.service.RuleEngineService;
+import com.moveinsync.vehicleTracking.service.TripService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/location")
+@RequestMapping("/location")
 public class LocationController {
 
-    private final RuleEngineService ruleEngineService = new RuleEngineService();
-    @RequestMapping(value = "/update", method = {RequestMethod.GET, RequestMethod.POST})
+    @Autowired
+    private TripService tripService;
+
+    @PostMapping("/update/{tripId}")
     public String updateLocation(
-            @RequestParam String vehicleId,
-            @RequestParam String tripId,
-            @RequestParam double latitude,
-            @RequestParam double longitude,
-            @RequestParam double pickupLat,
-            @RequestParam double pickupLon
-    ) {
-        Location location = new Location(latitude, longitude);
+            @PathVariable String tripId,
+            @RequestBody Location location) {
 
-        ruleEngineService.processLocation(
-                vehicleId,
-                tripId,
-                location,
-                pickupLat,
-                pickupLon
-        );
-
-        return "Location processed successfully | Vehicle: " + vehicleId +
-                " | Trip: " + tripId +
-                " | Lat: " + latitude +
-                " | Lon: " + longitude;
+        return tripService.updateLocation(tripId, location);
     }
 }
